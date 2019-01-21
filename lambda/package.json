@@ -9,6 +9,6 @@
   "author": "Louise Yang",
   "license": "ISC",
   "dependencies": {
-    "alexa-sdk": "^1.0.25"
+    "ask-sdk": "^2.3.0"
   }
 }

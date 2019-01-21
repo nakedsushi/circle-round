@@ -1,79 +1,88 @@
-'use strict';
+const Alexa = require('ask-sdk');
 
-const Alexa = require('alexa-sdk');
-const request = require('request');
-const striptags = require('striptags');
-
-# TODO fill out
-const APP_ID = '';
-
-const languageStrings = {
-  'en': {
-    translation: {
-      SKILL_NAME: 'Circle Round',
-      WELCOME_MESSAGE: "Welcome to Circle Round.  You can ask me to play an episode by saying...play an episode about X and Z.",
-      WELCOME_REPROMPT: 'Are you ready? Ask me to play an episode by saying...play an episode about X',
-      DISPLAY_CARD_TITLE: '%s  - Play Circle Round episodes',
-      HELP_MESSAGE: "Ask me to play an episode by saying...play an episode about dragons",
-      HELP_REPROMPT: "Ask me to play an episode by saying...play an episode about rice cakes"
-    },
+const LaunchRequestHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
-  'en-US': {
-    translation: {
-      SKILL_NAME: 'Circle Round',
-    },
-  }
+  handle(handlerInput) {
+    const speechText = 'Welcome to Circle Round. You can ask me to play an episode by asking...Play the episode about a queen.';
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard('Hello World', speechText)
+      .getResponse();
+  },
 };
 
-const handlers = {
-  'LaunchRequest': function () {
-    this.attributes.speechOutput = this.t('WELCOME_MESSAGE', this.t('SKILL_NAME'));
-    this.attributes.repromptSpeech = this.t('WELCOME_REPROMPT');
+const PlayEpisodeHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'PlayEpisodeRequest';
+  },
+  handle(handlerInput) {
+    const title = "The Queen's gift";
+    const url = "https://dts.podtrac.com/redirect.mp3/traffic.megaphone.fm/BUR1642881468.mp3";
 
-    this.response.speak(this.attributes.speechOutput).listen(this.attributes.repromptSpeech);
-    this.emit(':responseReady');
+    return handlerInput.responseBuilder
+      .speak(`Playing ${title}`)
+      .audioPlayerPlay(
+        'REPLACE_ALL',
+        url,
+        null,
+        0
+      );
   },
-  'PlayEpisodeIntent': function () {
-    this.attributes.eventCounter = 0;
-    this.attributes.dayOfWeek = undefined;
-    if (!this.attributes.events) {
-      getEventFromApi.call(this).then(() => {
-        speakEvent.call(this); });
-    } else {
-      speakEvent.call(this);
-    }
-  },
-  'AMAZON.HelpIntent': function () {
-    this.attributes.speechOutput = this.t('HELP_MESSAGE');
-    this.attributes.repromptSpeech = this.t('HELP_REPROMPT');
-
-    this.response.speak(this.attributes.speechOutput).listen(this.attributes.repromptSpeech);
-    this.emit(':responseReady');
-  },
-  'AMAZON.StopIntent': function () {
-    this.emit('SessionEndedRequest');
-  },
-  'AMAZON.CancelIntent': function () {
-    this.emit('SessionEndedRequest');
-  },
-  'SessionEndedRequest': function () {
-    this.response.speak("Goodbye!");
-    this.emit(':responseReady');
-    console.log(`Session ended: ${this.event.request.reason}`);
-  },
-  'Unhandled': function () {
-    this.attributes.speechOutput = this.t('HELP_MESSAGE');
-    this.attributes.repromptSpeech = this.t('HELP_REPROMPT');
-    this.response.speak(this.attributes.speechOutput).listen(this.attributes.repromptSpeech);
-    this.emit(':responseReady');
-  }
 };
 
-exports.handler = function (event, context, callback) {
-  const alexa = Alexa.handler(event, context, callback);
-  alexa.APP_ID = APP_ID;
-  // To enable string internationalization (i18n) features, set a resources object.
-  alexa.resources = languageStrings;
-  alexa.registerHandlers(handlers);
-  alexa.execute();
+const CancelAndStopIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
+      || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+  },
+  handle(handlerInput) {
+    const speechText = 'Goodbye!';
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .withSimpleCard('Hello World', speechText)
+      .getResponse();
+  },
 };
+
+const SessionEndedRequestHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+  },
+  handle(handlerInput) {
+    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+
+    return handlerInput.responseBuilder.getResponse();
+  },
+};
+
+const ErrorHandler = {
+  canHandle() {
+    return true;
+  },
+  handle(handlerInput, error) {
+    console.log(`Error handled: ${error.message}`);
+
+    return handlerInput.responseBuilder
+      .speak('Sorry, I can\'t understand the command. Please say again.')
+      .reprompt('Sorry, I can\'t understand the command. Please say again.')
+      .getResponse();
+  },
+};
+
+const skillBuilder = Alexa.SkillBuilders.custom();
+
+exports.handler = skillBuilder
+  .addRequestHandlers(
+    LaunchRequestHandler,
+    PlayEpisodeHandler,
+    CancelAndStopIntentHandler,
+    SessionEndedRequestHandler
+  )
+  .addErrorHandlers(ErrorHandler)
+  .lambda();
