@@ -17,16 +17,26 @@ const LaunchRequestHandler = {
   },
 };
 
+function findEpisode(fields, keyword) {
+  const index = fields.findIndex(function(row) {
+    return row[0].split(',').includes(keyword);
+  });
+  const title = fields[index][1];
+  const url = fields[index][2];
+  return [title, url];
+}
+
 const PlayEpisodeHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
       (handlerInput.requestEnvelope.request.intent.name === 'PlayEpisodeRequest');
   },
   async handle(handlerInput) {
+    const { requestEnvelope, attributesManager, responseBuilder } = handlerInput;
+    const keyword = requestEnvelope.request.intent.slots.subject.value;
     const resp = await request(sheetsUrl);
-    const body = JSON.parse(resp).values[1];
-    let title = body[1];
-    let url = body[2];
+    const fields = JSON.parse(resp).values;
+    const [title, url] = findEpisode(fields, keyword);
     return handlerInput.responseBuilder
       .speak(`Playing ${title}`)
       .withShouldEndSession(true)
