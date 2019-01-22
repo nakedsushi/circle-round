@@ -17,20 +17,18 @@ const LaunchRequestHandler = {
 
 const PlayEpisodeHandler = {
   canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'PlayEpisodeRequest';
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+      (handlerInput.requestEnvelope.request.intent.name === 'PlayEpisodeRequest');
   },
   handle(handlerInput) {
     const title = "The Queen's gift";
     const url = "https://dts.podtrac.com/redirect.mp3/traffic.megaphone.fm/BUR1642881468.mp3";
-
+    console.log(url);
     return handlerInput.responseBuilder
       .speak(`Playing ${title}`)
-      .audioPlayerPlay(
-        'REPLACE_ALL',
-        url,
-        null,
-        0
-      );
+      .withShouldEndSession(true)
+      .addAudioPlayerPlayDirective('REPLACE_ALL', url, 'token', 0, null)
+      .getResponse();
   },
 };
 
@@ -75,7 +73,7 @@ const ErrorHandler = {
   },
 };
 
-const skillBuilder = Alexa.SkillBuilders.custom();
+const skillBuilder = Alexa.SkillBuilders.standard();
 
 exports.handler = skillBuilder
   .addRequestHandlers(
