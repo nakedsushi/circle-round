@@ -9,6 +9,9 @@
   "author": "Louise Yang",
   "license": "ISC",
   "dependencies": {
-    "ask-sdk": "^2.3.0"
+    "ask-sdk": "^2.3.0",
+    "async": "^2.6.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
   }
 }

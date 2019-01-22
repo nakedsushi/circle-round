@@ -1,4 +1,6 @@
 const Alexa = require('ask-sdk');
+const request = require('request-promise');
+const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${process.env.SHEET_ID}/values/sheet1?key=${process.env.API_KEY}`;
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -20,10 +22,11 @@ const PlayEpisodeHandler = {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
       (handlerInput.requestEnvelope.request.intent.name === 'PlayEpisodeRequest');
   },
-  handle(handlerInput) {
-    const title = "The Queen's gift";
-    const url = "https://dts.podtrac.com/redirect.mp3/traffic.megaphone.fm/BUR1642881468.mp3";
-    console.log(url);
+  async handle(handlerInput) {
+    const resp = await request(sheetsUrl);
+    const body = JSON.parse(resp).values[1];
+    let title = body[1];
+    let url = body[2];
     return handlerInput.responseBuilder
       .speak(`Playing ${title}`)
       .withShouldEndSession(true)
