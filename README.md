@@ -11,6 +11,10 @@ Unofficial Alexa app that plays Circle Round podcasts
 
 ## development
 
+* set up required environment variables in the AWS lambda console:
+    * `API_KEY` = Google Sheet API key
+    * `SHEET_ID` = Google Sheet Id (visible in the sheet URL)
+
 * lambda related work is all in the `/lambda` directory.  To push changes,
 use the `publish.sh` script which assumes you already have the AWS CLI set up with the right env variables.
 
