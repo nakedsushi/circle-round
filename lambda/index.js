@@ -21,9 +21,13 @@ function findEpisode(fields, keyword) {
   const index = fields.findIndex(function(row) {
     return row[0].split(',').includes(keyword);
   });
-  const title = fields[index][1];
-  const url = fields[index][2];
-  return [title, url];
+  if (index >= 0) {
+    const title = fields[index][1];
+    const url = fields[index][2];
+    return [title, url];
+  } else {
+    return [undefined,undefined];
+  }
 }
 
 const PlayEpisodeHandler = {
@@ -37,11 +41,18 @@ const PlayEpisodeHandler = {
     const resp = await request(sheetsUrl);
     const fields = JSON.parse(resp).values;
     const [title, url] = findEpisode(fields, keyword);
-    return handlerInput.responseBuilder
-      .speak(`Playing ${title}`)
-      .withShouldEndSession(true)
-      .addAudioPlayerPlayDirective('REPLACE_ALL', url, 'token', 0, null)
-      .getResponse();
+    if (title) {
+      return handlerInput.responseBuilder
+        .speak(`Playing ${title}`)
+        .withShouldEndSession(true)
+        .addAudioPlayerPlayDirective('REPLACE_ALL', url, 'token', 0, null)
+        .getResponse();
+    } else {
+      return handlerInput.responseBuilder
+        .speak(`Sorry friend, I couldn't find the one about ${keyword}. Ask me to play another one.`)
+        .withShouldEndSession(false)
+        .getResponse();
+    }
   },
 };
 

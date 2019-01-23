@@ -1,0 +1,159 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "circle round",
+      "intents": [
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "PlayEpisodeRequest",
+          "slots": [
+            {
+              "name": "subject",
+              "type": "subject",
+              "samples": [
+                "rice cakes",
+                "well",
+                "bell",
+                "cow",
+                "prince",
+                "queen",
+                "dragon",
+                "flask"
+              ]
+            }
+          ],
+          "samples": [
+            "play the episode with a {subject}",
+            "play the one with a {subject}",
+            "play the one with {subject}",
+            "play the episode about a {subject}",
+            "play the episode about {subject}",
+            "play the story about {subject}",
+            "play the story about a {subject} ",
+            "play the one about {subject}",
+            "play the one about a {subject}",
+            "play story with {subject}",
+            "play episode with {subject}",
+            "play story about {subject}"
+          ]
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": []
+        }
+      ],
+      "types": [
+        {
+          "name": "subject",
+          "values": [
+            {
+              "name": {
+                "value": "gold"
+              }
+            },
+            {
+              "name": {
+                "value": "flask"
+              }
+            },
+            {
+              "name": {
+                "value": "prince"
+              }
+            },
+            {
+              "name": {
+                "value": "well"
+              }
+            },
+            {
+              "name": {
+                "value": "bell"
+              }
+            },
+            {
+              "name": {
+                "value": "cow"
+              }
+            },
+            {
+              "name": {
+                "value": "queen"
+              }
+            },
+            {
+              "name": {
+                "value": "dragon"
+              }
+            },
+            {
+              "name": {
+                "value": "flask"
+              }
+            }
+
+          ]
+        }
+      ]
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "PlayEpisodeRequest",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "subject",
+              "type": "subject",
+              "confirmationRequired": false,
+              "elicitationRequired": true,
+              "prompts": {
+                "elicitation": "Elicit.Slot.290891687331.407474629966"
+              }
+            }
+          ]
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
+    "prompts": [
+      {
+        "id": "Elicit.Slot.290891687331.407474629966",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "What is the story about?"
+          },
+          {
+            "type": "PlainText",
+            "value": "What is the episode about?"
+          }
+        ]
+      }
+    ]
+  }
+}
