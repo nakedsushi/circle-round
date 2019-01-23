@@ -1,4 +1,4 @@
-# lambda-circle-round
+# circle-round
 Unofficial Alexa app that plays Circle Round podcasts
 
 ## flow
